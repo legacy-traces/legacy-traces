@@ -10,11 +10,14 @@ import Favorites from './pages/Favorites';
 import Cart from './pages/Cart';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import ShippingPolicy from './pages/ShippingPolicy';
 import { CartProvider } from './context/CartContext';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <CartProvider>
+      <ScrollToTop />
       <div className="app min-h-screen flex flex-col bg-white dark:bg-[#121212] text-black dark:text-white transition-colors duration-300">
         <Header />
         <Routes>
@@ -26,6 +29,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
         </Routes>
         <Footer />
       </div>

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { Mail, Phone, MapPin, Send, Instagram, Twitter, Facebook, CheckCircle2, AlertCircle } from 'lucide-react';
-import emailjs from '@emailjs/browser';
+import { Mail, Phone, MapPin, Send, Instagram, Facebook, CheckCircle2, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import SEO from '../components/SEO';
 
 const Contact = () => {
@@ -8,29 +8,44 @@ const Contact = () => {
     const [status, setStatus] = useState({ type: '', message: '' });
     const [isSending, setIsSending] = useState(false);
 
-    const handleSubmit = async (e) => {
+    const validateEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setIsSending(true);
         setStatus({ type: '', message: '' });
 
-        // EmailJS integration
-        // Note: These should ideally be in environment variables (VITE_EMAILJS_SERVICE_ID, etc.)
-        const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_placeholder';
-        const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_placeholder';
-        const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'public_key_placeholder';
+        const formData = new FormData(form.current);
+        const name = formData.get('user_name');
+        const email = formData.get('user_email');
+        const subject = formData.get('subject');
+        const message = formData.get('message');
+
+        if (!name || !email || !subject || !message) {
+            setStatus({ type: 'error', message: 'All fields are mandatory. Please fill in everything.' });
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            setStatus({ type: 'error', message: 'Please enter a valid email address' });
+            return;
+        }
+
+        setIsSending(true);
 
         try {
-            await emailjs.sendForm(
-                serviceId,
-                templateId,
-                form.current,
-                publicKey
-            );
-            setStatus({ type: 'success', message: 'Message sent successfully! We will get back to you soon.' });
+            const recipient = 'legacytraces24@gmail.com';
+            const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+            const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            window.location.href = mailtoUrl;
+
+            setStatus({ type: 'success', message: 'Opening your email client...' });
             form.current.reset();
         } catch (error) {
-            console.error('EmailJS Error:', error);
-            setStatus({ type: 'error', message: 'Failed to send message. Please try again later or email us directly.' });
+            console.error('Mailto Error:', error);
+            setStatus({ type: 'error', message: 'Failed to open email client. Please try again or email us directly at legacytraces24@gmail.com' });
         } finally {
             setIsSending(false);
         }
@@ -92,14 +107,6 @@ const Contact = () => {
                                 <Instagram size={24} className="group-hover:scale-110 transition-transform" />
                             </a>
                             <a
-                                href="https://twitter.com/legacytraces"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-primary hover:text-black transition-all group"
-                            >
-                                <Twitter size={24} className="group-hover:scale-110 transition-transform" />
-                            </a>
-                            <a
                                 href="https://facebook.com/legacytraces"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -129,12 +136,12 @@ const Contact = () => {
                             <div className="space-y-2">
                                 <label htmlFor="user_email" className="text-sm font-bold ml-1">Email</label>
                                 <input
-                                    type="email"
+                                    type="text"
                                     id="user_email"
                                     name="user_email"
                                     required
                                     placeholder="Your email address"
-                                    className="w-full px-5 py-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                                    className={`w-full px-5 py-4 rounded-xl border bg-transparent focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all ${status.message === 'Please enter a valid email address' ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'}`}
                                 />
                             </div>
                         </div>
@@ -163,12 +170,20 @@ const Contact = () => {
                             ></textarea>
                         </div>
 
-                        {status.message && (
-                            <div className={`p-4 rounded-xl flex items-center gap-3 ${status.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
-                                {status.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
-                                <p className="text-sm font-medium">{status.message}</p>
-                            </div>
-                        )}
+                        <AnimatePresence mode="wait">
+                            {status.message && (
+                                <motion.div
+                                    key={status.message}
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className={`p-4 rounded-xl flex items-center gap-3 ${status.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}
+                                >
+                                    {status.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+                                    <p className="text-sm font-medium">{status.message}</p>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         <button
                             type="submit"
@@ -178,7 +193,7 @@ const Contact = () => {
                             {isSending ? (
                                 <>
                                     <div className="w-5 h-5 border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin"></div>
-                                    SENDING...
+                                    PREPARING EMAIL...
                                 </>
                             ) : (
                                 <>

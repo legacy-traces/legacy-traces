@@ -13,23 +13,6 @@ const Header = () => {
 
     return (
         <>
-            <style>{`
-
-
-@media only screen and (max-width: 600px) {
-
-      .mobileStyle {
-                   background-color: black; 
-                }
-}
-
-@media only screen and (min-width: 600px) {
-      .mobileStyle {
-                   background-color: black; 
-                }
-}
-          
-            `}</style>
             <header className="sticky top-0 z-50 bg-white/90 dark:bg-[#121212]/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
                 <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                     {/* Logo */}
@@ -49,7 +32,7 @@ const Header = () => {
                     {/* Actions */}
                     <div className="flex items-center gap-4">
                         <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                            {theme === 'light' ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
 
                         <Link to="/favorites" className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -84,7 +67,7 @@ const Header = () => {
                             <X size={24} />
                         </button>
                     </div>
-                    <nav className="flex flex-col p-4 gap-2 text-lg font-medium mobileStyle">
+                    <nav className="flex flex-col p-4 gap-2 text-lg font-medium">
                         <Link to="/" onClick={() => setIsMenuOpen(false)} className="block p-4 text-black dark:text-white hover:text-primary transition-colors border-b border-gray-200 dark:border-gray-800 last:border-none">Home</Link>
                         <Link to="/shop" onClick={() => setIsMenuOpen(false)} className="block p-4 text-black dark:text-white hover:text-primary transition-colors border-b border-gray-200 dark:border-gray-800 last:border-none">Shop</Link>
                         <Link to="/customize" onClick={() => setIsMenuOpen(false)} className="block p-4 text-black dark:text-white hover:text-primary transition-colors border-b border-gray-200 dark:border-gray-800 last:border-none">Customize</Link>
